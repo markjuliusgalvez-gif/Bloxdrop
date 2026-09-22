@@ -1,0 +1,25 @@
+{
+  "name": "my-game-repo-github",
+  "version": "1.0.0",
+  "description": "> A modern, neon-themed arcade block-falling puzzle game built with HTML5 Canvas, CSS3, and Vanilla JavaScript.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markjuliusgalvez-gif/Bloxdrop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/markjuliusgalvez-gif/Bloxdrop/issues"
+  },
+  "homepage": "https://github.com/markjuliusgalvez-gif/Bloxdrop#readme",
+  "devDependencies": {
+    "electron": "^44.4.4",
+    "electron-packager": "^17.1.2"
+  }
+}
