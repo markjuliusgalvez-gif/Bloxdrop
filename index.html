@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blockdrop</title>
+<!-- SVG Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2305060c'/><rect x='4' y='4' width='11' height='11' rx='2' fill='%235ee7ff'/><rect x='17' y='4' width='11' height='11' rx='2' fill='%235ee7ff'/><rect x='4' y='17' width='11' height='11' rx='2' fill='%23ff5ec4'/><rect x='17' y='17' width='11' height='11' rx='2' fill='%23ffe15e'/></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ ANIMATED MOUSE CURSOR ============ -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ============ LOADING SCREEN ============ -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <h1 class="logo">BLOCK<span>DROP</span></h1>
+      <div class="spinner"></div>
+      <p class="muted small">Loading game engine...</p>
+    </div>
+  </div>
+
+<div id="app">
+
+  <!-- ============ MAIN MENU ============ -->
+  <section id="view-menu" class="view active">
+    <div class="panel glow-panel menu-card">
+      <h1 class="logo">BLOCK<span>DROP</span></h1>
+      <div class="cores-badge"><span class="core-icon">◆</span><span id="menuCores">0</span></div>
+      <button class="menu-btn primary" id="btnPlay">▶ Play</button>
+      <button class="menu-btn" id="btnShop">Shop</button>
+      <button class="menu-btn" id="btnSettings">Settings</button>
+    </div>
+  </section>
+
+  <!-- ============ MODE SELECT ============ -->
+  <section id="view-modes" class="view">
+    <div class="panel glow-panel wide">
+      <h2>Select Mode</h2>
+      <div class="mode-grid" id="modeGrid"></div>
+      <button class="menu-btn ghost" id="btnModesBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- ============ SHOP ============ -->
+  <section id="view-shop" class="view">
+    <div class="panel glow-panel wide">
+      <div class="shop-header">
+        <h2>Shop</h2>
+        <div class="cores-badge"><span class="core-icon">◆</span><span id="shopCores">0</span></div>
+      </div>
+      <p class="muted small">Earn cores by clearing lines. Abilities carry into every run until used.</p>
+      <div class="shop-grid" id="shopGrid"></div>
+      <button class="menu-btn ghost" id="btnShopBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section id="view-settings" class="view">
+    <div class="panel glow-panel">
+      <h2>Settings</h2>
+      <div class="setting-row">
+        <span>Control Mode</span>
+        <button class="toggle-btn" id="toggleControl">Normal (Mouse)</button>
+      </div>
+      <div class="setting-row">
+        <span>Music</span>
+        <button class="toggle-btn" id="toggleMusic">On</button>
+      </div>
+      <div class="setting-row">
+        <span>Sound Effects</span>
+        <button class="toggle-btn" id="toggleSfx">On</button>
+      </div>
+      <button class="menu-btn ghost" id="btnSettingsBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- ============ LOADOUT (pre-match) ============ -->
+  <section id="view-loadout" class="view">
+    <div class="panel glow-panel wide">
+      <h2 id="loadoutModeTitle">Marathon</h2>
+      <p class="muted" id="loadoutModeDesc"></p>
+      <h3 class="section-label">Your loadout</h3>
+      <div class="loadout-grid" id="loadoutGrid"></div>
+      <button class="menu-btn primary" id="btnStartMatch">Start</button>
+      <button class="menu-btn ghost" id="btnLoadoutBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="view-game" class="view">
+    <div class="wrap">
+      <div class="board-panel glow-panel">
+        <div class="topbar">
+          <div class="mode-pill" id="hudMode">Marathon</div>
+          <div class="timer" id="hudTimer"></div>
+        </div>
+        <div class="board-wrap">
+          <canvas id="board" width="300" height="600"></canvas>
+          <div class="overlay" id="overlay">
+            <h3 id="overlayTitle">Paused</h3>
+            <p id="overlaySub">Press Resume or hit P</p>
+            <button class="menu-btn primary" id="overlayBtn" style="width:160px;">Resume</button>
+            <button class="menu-btn ghost" id="overlayQuitBtn" style="width:160px;">Quit to Menu</button>
+          </div>
+        </div>
+        <div class="ability-bar" id="abilityBar"></div>
+        <div class="touch-controls">
+          <div class="row">
+            <button id="tLeft">◀</button>
+            <button id="tRotate">⟳</button>
+            <button id="tRight">▶</button>
+          </div>
+          <div class="row">
+            <button id="tDown">▼ Soft</button>
+            <button id="tDrop">⤓ Drop</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="card glow-panel">
+          <h2>Status</h2>
+          <div class="stat">Score <b id="score">0</b></div>
+          <div class="stat">Lines <b id="lines">0</b></div>
+          <div class="stat">Level <b id="level">1</b></div>
+          <div class="stat combo-stat" id="comboStat" style="display:none;">Combo <b id="combo">0</b></div>
+        </div>
+        <div class="card glow-panel">
+          <h2>Next</h2>
+          <canvas id="next" width="90" height="90"></canvas>
+        </div>
+        <div class="card glow-panel">
+          <h2>Controls</h2>
+          <ul class="controls-list">
+            <li><b>← →</b> move</li>
+            <li><b>↑</b> rotate</li>
+            <li><b>↓</b> soft drop</li>
+            <li><b>Space</b> hard drop</li>
+            <li><b>P</b> pause</li>
+            <li><b>Q / E</b> abilities</li>
+          </ul>
+        </div>
+        <div class="card glow-panel">
+          <h2>Game</h2>
+          <div class="btnrow">
+            <button id="pauseBtn">Pause</button>
+            <button id="muteBtn">🔊 Music</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="view-results" class="view">
+    <div class="panel glow-panel">
+      <h2 id="resultsTitle">Run Complete</h2>
+      <p class="muted" id="resultsSub"></p>
+      <div class="results-stats" id="resultsStats"></div>
+      <div class="cores-earned" id="resultsCores"></div>
+      <button class="menu-btn primary" id="btnRetry">Retry</button>
+      <button class="menu-btn ghost" id="btnResultsMenu">Main Menu</button>
+    </div>
+  </section>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
