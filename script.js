@@ -61,11 +61,16 @@
   requestAnimationFrame(updateCursorAnimation);
 
   function applyControlMode() {
-    if (save.controlMode === 'keyboard') {
+    // Disable custom cursor on mobile or touch-primary devices automatically
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+    if (save.controlMode === 'keyboard' && !isTouchDevice) {
       document.body.classList.remove('custom-cursor');
       document.body.classList.add('keyboard-mode');
-    } else {
+    } else if (!isTouchDevice) {
       document.body.classList.add('custom-cursor');
+      document.body.classList.remove('keyboard-mode');
+    } else {
+      document.body.classList.remove('custom-cursor');
       document.body.classList.remove('keyboard-mode');
     }
   }
@@ -75,10 +80,8 @@
     const activeView = document.querySelector('.view.active');
     if (!activeView) return;
 
-    // During active gameplay, game controls handle key events
     if (activeView.id === 'view-game' && running && !paused && !gameOver) return;
 
-    // Keyboard-only navigation across menus
     if (save.controlMode === 'keyboard' || activeView.id !== 'view-game') {
       const focusables = Array.from(activeView.querySelectorAll('button:not([disabled]), .mode-card[tabindex="0"]'));
       if (!focusables.length) return;
@@ -576,7 +579,7 @@
   function drawNext(){
     nctx.fillStyle = '#07080f';
     nctx.fillRect(0,0,nextCanvas.width,nextCanvas.height);
-    const size=18;
+    const size=16;
     const offX=(nextCanvas.width-4*size)/2;
     const offY=(nextCanvas.height-4*size)/2;
     for(const [cx,cy] of nextPiece.cells){
@@ -684,7 +687,6 @@
     const target = document.getElementById(id);
     target.classList.add('active');
 
-    // Auto focus primary element for keyboard users
     setTimeout(() => {
       const focusTarget = target.querySelector('.menu-btn.primary, .mode-card, button');
       if (focusTarget) focusTarget.focus();
@@ -904,18 +906,26 @@
 
   function bindHold(el, fn, repeatMs){
     let iv;
-    const start=(e)=>{ e.preventDefault(); if(!running||paused||gameOver||clearAnim) return; fn(); iv=setInterval(fn, repeatMs); };
-    const stop=()=>{ clearInterval(iv); };
+    const start=(e)=>{ 
+      e.preventDefault(); 
+      if(!running||paused||gameOver||clearAnim) return; 
+      fn(); 
+      iv=setInterval(fn, repeatMs); 
+    };
+    const stop=(e)=>{ e.preventDefault(); clearInterval(iv); };
+    
     el.addEventListener('touchstart', start, {passive:false});
-    el.addEventListener('touchend', stop);
+    el.addEventListener('touchend', stop, {passive:false});
     el.addEventListener('mousedown', start);
     el.addEventListener('mouseup', stop);
     el.addEventListener('mouseleave', stop);
   }
-  bindHold(document.getElementById('tLeft'), ()=>move(-1), 140);
-  bindHold(document.getElementById('tRight'), ()=>move(1), 140);
-  bindHold(document.getElementById('tDown'), ()=>softDrop(), 90);
+  bindHold(document.getElementById('tLeft'), ()=>move(-1), 120);
+  bindHold(document.getElementById('tRight'), ()=>move(1), 120);
+  bindHold(document.getElementById('tDown'), ()=>softDrop(), 80);
+  document.getElementById('tRotate').addEventListener('touchstart', (e)=>{ e.preventDefault(); if(running&&!paused&&!gameOver&&!clearAnim) rotate(); }, {passive:false});
   document.getElementById('tRotate').addEventListener('click', (e)=>{ e.preventDefault(); if(running&&!paused&&!gameOver&&!clearAnim) rotate(); });
+  document.getElementById('tDrop').addEventListener('touchstart', (e)=>{ e.preventDefault(); if(running&&!paused&&!gameOver&&!clearAnim) hardDrop(); }, {passive:false});
   document.getElementById('tDrop').addEventListener('click', (e)=>{ e.preventDefault(); if(running&&!paused&&!gameOver&&!clearAnim) hardDrop(); });
 
   // =========================================================
@@ -1003,5 +1013,6 @@
   resizeCanvas();
   refreshCoreBadges();
   applyControlMode();
+  window.addEventListener('resize', applyControlMode);
   requestAnimationFrame(loop);
 })();
