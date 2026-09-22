@@ -4,8 +4,6 @@
 
 [![Play Live](https://img.shields.io/badge/PLAY%20NOW-Live%20Demo-5ee7ff?style=for-the-badge&logo=github)](https://markjuliusgalvez-gif.github.io/Bloxdrop/)
 
-👉 **Play the game directly in your browser:** [https://markjuliusgalvez-gif.github.io/Bloxdrop/](https://markjuliusgalvez-gif.github.io/Bloxdrop/)
-
 ---
 
 ## ✨ Features
